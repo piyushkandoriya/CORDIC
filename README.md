@@ -10,7 +10,8 @@
       <ul>
         <li><a href="#header-1_2">Synthesis of 2D ROTATING MODE CORDIC using GENUS</a></li>
       </ul>
-		
+</div>
+	
   <div class="toc">
   <ul>
       <li><a href="#header-2">2D VECTORING MODE CORDIC</a></li>
@@ -20,7 +21,7 @@
       <ul>
         <li><a href="#header-2_2">Synthesis of 2D VECTORING MODE CORDIC using GENUS</a></li>
       </ul>
-  
+  </div>
   <div class="toc">
   <ul>
     <li><a href="#header-3">ROTATING and VECTORING combine design of CORDIC</a></li>
@@ -30,6 +31,7 @@
       <ul>
         <li><a href="#header-3_2">Synthesis of ROTATING and VECTORING combine design of CORDIC using GENUS</a></li>
       </ul>
+</div>
 	
 <div class="toc">
   <ul>
@@ -41,7 +43,7 @@
         <li><a href="#header-4_2">Synthesis of Doubly Pipeling of ROTATING and VECTORING CORDIC using GENUS</a></li>
       </ul>
 	<ul>
- 
+ </div>
 		
 		
 		
