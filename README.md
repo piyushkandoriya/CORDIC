@@ -159,6 +159,7 @@ endmodule
 ```
 
 ### Output Waveform
+<img width="749" alt="image" src="https://user-images.githubusercontent.com/123488595/234951940-43d1d883-0c29-4c53-9ae9-342ddd7b9cec.png">
 
 
 ## <h1 id="header-1_2">Synthesis of 2D ROTATING MODE CORDIC using GENUS</h1>
