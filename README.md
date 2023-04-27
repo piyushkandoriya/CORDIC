@@ -49,96 +49,117 @@
 ## <h1 id="header-1_1">VERILOG code and Simulation output</h1>
 ### VERILOG CODE
 ```verilog
-    module rotation_mode #(parameter N=32)(
-    input  signed [N-1:0] x0, y0,
-    input  signed [17:0] angle,
-    input  clk,
-    output signed [N-1:0] xf, yf
-    );
-   
-    //Micro-angles storing in reg. multipled by 1000
-    reg signed [17:0] reg_angle [0:N-1];
-    initial begin reg_angle[0] = 45000; reg_angle[1] = 26565; reg_angle[2] = 14036; reg_angle[3] = 7125; //3-digit decimal
-                  reg_angle[4] = 03576; reg_angle[5] = 01790; reg_angle[6] = 00895; reg_angle[7] = 0448;
-                  reg_angle[8] = 00224; reg_angle[9] = 00112; reg_angle[10]= 00056; reg_angle[11]= 0028;
-                  reg_angle[12]= 00014; reg_angle[13]= 00007; reg_angle[14]= 00003; reg_angle[15]= 0002;
-            end
-     
-    //Other variables            
-    reg signed [17:0] angle_new;      
+    module ROTATING(x0, y0, theta, xf, yf, clk);
+  input clk;
+  input [15:0] x0, y0;
+  input [15:0] theta;
+  output [15:0] xf, yf;
+  wire [15:0] xi [0:7]; 
+  wire [15:0] yi [0:7];
+  reg [2:0] stage;
+  wire [15:0] outangle [0:7];
+  
+  
+  // instantiating
+  
+  //stage0
+  cordics r0(clk, 3'd0, x0, y0, theta, 16'd45_00, 16'd0, xi[0], yi[0], outangle[0]);
+  //stage1
+  cordics r1(clk, 3'd1, xi[0], yi[0], theta, 16'd26_57, outangle[0], xi[1], yi[1], outangle[1]);
+  //stage2
+  cordics r2(clk, 3'd2, xi[1], yi[1], theta, 16'd14_04, outangle[1], xi[2], yi[2], outangle[2]); 
+  //stage3
+  cordics r3(clk, 3'd3, xi[2], yi[2], theta, 16'd7_13, outangle[2], xi[3], yi[3], outangle[3]);
+  //stage4
+  cordics r4(clk, 3'd4, xi[3], yi[3], theta, 16'd3_58, outangle[3], xi[4], yi[4], outangle[4]);  
+  //stage5
+  cordics r5(clk, 3'd5, xi[4], yi[4], theta, 16'd1_79, outangle[4], xi[5], yi[5], outangle[5]);
+  //stage6
+  cordics r6(clk, 3'd6, xi[5], yi[5], theta, 16'd89, outangle[5], xi[6], yi[6], outangle[6]);
+  //stage7
+  cordics r7(clk, 3'd7, xi[6], yi[6], theta, 16'd44, outangle[6], xi[7], yi[7], outangle[7]);
+  assign xf = xi[7];
+  assign yf = yi[7];
+  // assign xf <= (xi[7]>>>1)+(xi[7]>>>4)+(xi[7]>>>5);
+  //assign yf <= (yi[7]>>>1)+(yi[7]>>>4)+(yi[7]>>>5);
+  
+endmodule
+  
+  
+module cordics(clk,stage,xi,yi,theta,uangle,inangle,xf,yf,outangle);
+ input clk;
+ input [2:0] stage;
+ input [15:0] xi,yi,theta,inangle,uangle;
+ output reg [15:0] xf,yf,outangle;
 
-    integer i;
+ always @(posedge clk)begin
+   if((inangle)>theta)begin                                   //clockwise
+
+    case({xi[15],yi[15]})
+       2'b00 : begin
+          xf <= xi+(yi>>stage);
+            yf <= yi - (xi>>stage);
+       end
+       2'b01 : begin
+          xf <= xi-((16'hffff-yi+1)>>stage);
+          yf <= -(16'hffff-yi+1) - (xi>>stage);
+       end 
+      2'b10 : begin
+          xf <= -(16'hffff-xi+1)+(yi>>stage);
+          yf <= yi +((16'hffff-xi+1)>>stage);
+       end
+      2'b11 : begin 
+          xf <= -(16'hffff-xi+1)-((16'hffff-yi+1)>>stage);
+          yf <= -(16'hffff-yi+1) + ((16'hffff-xi+1)>>stage);
+       end
+    endcase
+    outangle <= inangle-uangle;
+   end
    
-    reg signed [N-1:0] x [0:N];
-    reg signed [N-1:0] y [0:N];
-    //reg signed [N-1:0] x, y;
-   
-    //Final output x[16]*0.607 --> 0.607=b0.10011011011
-    //assign xf=(((x[16])>>1)+((x[16])>>4)+((x[16])>>5)+((x[16])>>7)+((x[16])>>8)+((x[16])>>10));
-    //assign yf=(((y[16])>>1)+((y[16])>>4)+((y[16])>>5)+((y[16])>>7)+((y[16])>>8)+((y[16])>>10));
-   
-    assign xf=x[16]*0.607;
-    assign yf=y[16]*0.607;
-   
-    always @ (posedge clk) begin
-        angle_new = reg_angle[0];
-        //+45 for 1st stage
-        x[1] = x0 + y0;
-        y[1] = y0 - x0;
-        //x = x0 + y0;
-        //y = y0 - x0;
-       
-        for (i=1;i<=15;i=i+1) begin
-            if (angle_new < angle) begin  
-               x[i+1] = x[i] + (y[i]>>>i);
-               y[i+1] = y[i] - (x[i]>>>i);
-//               x = x + (y>>>i);
-//               y = y - (x>>>i);
-               angle_new = angle_new + reg_angle[i];
-            end
-            else begin
-               x[i+1] = x[i] - (y[i]>>>i);
-               y[i+1] = y[i] + (x[i]>>>i);
-//               x = x - (y>>>i);
-//               y = y + (x>>>i);
-               angle_new = angle_new - reg_angle[i];
-            end
+   else begin 
+    case({xi[15],yi[15]})
+       2'b00 : begin                                        //anticlockwise
+          xf <= xi-(yi>>stage);
+          yf <= yi + (xi>>stage);
         end
-    end
+       2'b01 : begin
+            xf <= xi + ((16'hffff-yi+1)>>stage);
+            yf <= -(16'hffff-yi+1) + (xi>>stage);
+        end 
+       2'b10 : begin
+          xf <= -((16'hffff-xi+1))-(yi>>stage);
+          yf <= yi - ((16'hffff-xi+1)>>stage);
+        end 
+       2'b11 : begin
+          xf <= -(16'hffff-xi+1)+((16'hffff-yi+1)>>stage);
+          yf <= -(16'hffff-yi+1) - ((16'hffff-xi+1)>>stage);
+        end
+    endcase
+         outangle <= inangle+uangle;
+   end
+  end
 endmodule
 ```
 	  
 ### Test bench
 ```verilog
-module test_rotation_mode();
-    parameter N=32;
-    reg  signed [N-1:0] x0, y0;
-    reg  signed [17:0] angle;
-    reg clk;
-    wire [N-1:0] xf, yf;
-   
-    rotation_mode_4 uut (x0, y0, angle, clk, xf, yf);
-
-    always #5 clk=~clk;
-   
-    initial begin
-        clk=0;
-        x0=30_000; y0=40_000;
-       
-        angle=53_000; #10;
-//        angle=30_000; #10;
-//        angle=45_000; #10;
-//        angle=60_000; #10;
-//        angle=75_000; #10;
-//        angle=90_000; #10;
-        //x0=1000; y0=9000; angle=10000; #10;
-        //$finish;
+module ROTATING_TB #(parameter period=5);
+  reg clk=0;
+  reg [15:0]x0,y0;
+  reg [15:0]theta;
+  wire [15:0]xf,yf;
+  always @(*)begin
+    #period clk<=~clk;
     end
+  ROTATING dut(x0,y0,theta,xf,yf,clk);
+  initial begin
+    {x0,y0,theta}={16'd3, 16'd4, 16'd5300};
+   end
 endmodule
 ```
 
 ### Output Waveform
-<img width="763" alt="image" src="https://user-images.githubusercontent.com/123488595/234938971-5be0a646-2872-4634-a0ab-0f7735017c94.png">
+
 
 ## <h1 id="header-1_2">Synthesis of 2D ROTATING MODE CORDIC using GENUS</h1>
 To synthesis the code, first we have to login into server by given code:
