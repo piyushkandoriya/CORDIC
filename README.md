@@ -11,7 +11,10 @@
         <li><a href="#header-1_2">Synthesis of 2D ROTATING MODE CORDIC using GENUS</a></li>
       </ul>
 	<ul>
-      
+		
+  <div class="toc">
+  <ul>
+	  
     <li><a href="#header-2">2D VECTORING MODE CORDIC</a></li>
 	<ul>
         <li><a href="#header-2_1">VERILOG code and Simulation output</a></li>
