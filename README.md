@@ -319,3 +319,6 @@ endmodule
 
 ## <h2 id="header-2_2">Synthesis of 2D VECTORING MODE CORDIC using GENUS</h2>
 ### Synthesis Design
+<img width="795" alt="image" src="https://user-images.githubusercontent.com/123488595/234975093-b9666d41-bbd2-4fc2-a95e-5493de6c4ba4.png">
+
+<img width="789" alt="image" src="https://user-images.githubusercontent.com/123488595/234975170-92b5ccb8-c669-4e27-af4e-28fa60c3b856.png">
