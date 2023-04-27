@@ -45,73 +45,65 @@
 	<ul>
  </div>
 		
-		
-		
-		
-		
-		
-		
-		
-		# **Advance Physical Design using OpenLANE/Sky130**
-# Contents 
- <div class="toc">
-  <ul>
-    <li><a href="#header-1">Day 1 - Inception of open-source EDA, OpenLANE and sky130 PDK</a></li>
-	<ul>
-        <li><a href="#header-1_1"> How to talk to computers</a></li>
-      </ul>
-      <ul>
-        <li><a href="#header-1_2">Soc design and OpenLANE</a></li>
-      </ul>
-	<ul>
-        <li><a href="#header-1_3">Get familiar to open-source EDA tools</a></li>
-      </ul>
-   </div>
-  
-<div class="toc">
-  <ul>
-    <li><a href="#header-2">Day 2 - Good floor planning considerations</a></li>
-	<ul>
-        <li><a href="#header-2_1"> Chip Floor planning consideration</a></li>
-      </ul>
-      <ul>
-        <li><a href="#header-2_2">Library building and Placement</a></li>
-      </ul>
-	<ul>
-        <li><a href="#header-2_3">Cell design and characterization flows</a></li>
-      </ul>
-	  <ul>
-        <li><a href="#header-2_4">General timing characterization parameters</a></li>
-      </ul>
-</div>
-  
-  <div class="toc">
-  <ul>
-    <li><a href="#header-3">Day 3 - Design library cell using Magic Layout and ngspice characterization</a></li>
-	<ul>
-        <li><a href="#header-3_1"> Labs for CMOS inverter ngspice simulations</a></li>
-      </ul>
-      <ul>
-        <li><a href="#header-3_2">Inception of layout ̂A CMOS faabrication process </a></li>
-      </ul>
-	<ul>
-        <li><a href="#header-3_3">Sky130 Tech File Labs</a></li>
-      </ul>
-   </div>
-	  
-<div class="toc">
-  <ul>
-    <li><a href="#header-4">Day 4 - Pre-layout timing analysis and importance of good clock tree</a></li>
-	<ul>
-        <li><a href="#header-4_1">Timing modeling using delay tables</a></li>
-      </ul>
-      <ul>
-        <li><a href="#header-4_2">Timing analysis with ideal clocks using openSTA</a></li>
-      </ul>
-	<ul>
-        <li><a href="#header-4_3">Clock tree synthesis TritonCTS and signal integrity</a></li>
-      </ul>
-	  <ul>
-        <li><a href="#header-4_4">Timing analysis with real clock using openSTA</a></li>
-      </ul>
-</div>
+# <h1 id="header-1">2D ROTATING MODE CORDIC</h1>	 
+## <h1 id="header-1_1">VERILOG code and Simulation output</h1>
+### VERILOG CODE
+```verilog
+	  module rotation_mode_4 #(parameter N=32)(
+    input  signed [N-1:0] x0, y0,
+    input  signed [17:0] angle,
+    input  clk,
+    output signed [N-1:0] xf, yf
+    );
+   
+    //Micro-angles storing in reg. multipled by 1000
+    reg signed [17:0] reg_angle [0:N-1];
+    initial begin reg_angle[0] = 45000; reg_angle[1] = 26565; reg_angle[2] = 14036; reg_angle[3] = 7125; //3-digit decimal
+                  reg_angle[4] = 03576; reg_angle[5] = 01790; reg_angle[6] = 00895; reg_angle[7] = 0448;
+                  reg_angle[8] = 00224; reg_angle[9] = 00112; reg_angle[10]= 00056; reg_angle[11]= 0028;
+                  reg_angle[12]= 00014; reg_angle[13]= 00007; reg_angle[14]= 00003; reg_angle[15]= 0002;
+            end
+     
+    //Other variables            
+    reg signed [17:0] angle_new;      
+
+    integer i;
+   
+    reg signed [N-1:0] x [0:N];
+    reg signed [N-1:0] y [0:N];
+    //reg signed [N-1:0] x, y;
+   
+    //Final output x[16]*0.607 --> 0.607=b0.10011011011
+    //assign xf=(((x[16])>>1)+((x[16])>>4)+((x[16])>>5)+((x[16])>>7)+((x[16])>>8)+((x[16])>>10));
+    //assign yf=(((y[16])>>1)+((y[16])>>4)+((y[16])>>5)+((y[16])>>7)+((y[16])>>8)+((y[16])>>10));
+   
+    assign xf=x[16]*0.607;
+    assign yf=y[16]*0.607;
+   
+    always @ (posedge clk) begin
+        angle_new = reg_angle[0];
+        //+45 for 1st stage
+        x[1] = x0 + y0;
+        y[1] = y0 - x0;
+        //x = x0 + y0;
+        //y = y0 - x0;
+       
+        for (i=1;i<=15;i=i+1) begin
+            if (angle_new < angle) begin  
+               x[i+1] = x[i] + (y[i]>>>i);
+               y[i+1] = y[i] - (x[i]>>>i);
+//               x = x + (y>>>i);
+//               y = y - (x>>>i);
+               angle_new = angle_new + reg_angle[i];
+            end
+            else begin
+               x[i+1] = x[i] - (y[i]>>>i);
+               y[i+1] = y[i] + (x[i]>>>i);
+//               x = x - (y>>>i);
+//               y = y + (x>>>i);
+               angle_new = angle_new - reg_angle[i];
+            end
+        end
+    end
+endmodule
+```
