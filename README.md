@@ -49,7 +49,7 @@
 ## <h1 id="header-1_1">VERILOG code and Simulation output</h1>
 ### VERILOG CODE
 ```verilog
-    module ROTATING(x0, y0, theta, xf, yf, clk);
+  module ROTATING(x0, y0, theta, xf, yf, clk);
   input clk;
   input [15:0] x0, y0;
   input [15:0] theta;
