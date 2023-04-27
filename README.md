@@ -49,7 +49,7 @@
 ## <h1 id="header-1_1">VERILOG code and Simulation output</h1>
 ### VERILOG CODE
 ```verilog
-	  module rotation_mode_4 #(parameter N=32)(
+    module rotation_mode #(parameter N=32)(
     input  signed [N-1:0] x0, y0,
     input  signed [17:0] angle,
     input  clk,
@@ -104,6 +104,35 @@
                angle_new = angle_new - reg_angle[i];
             end
         end
+    end
+endmodule
+```
+	  
+### Test bench
+```verilog
+module test_rotation_mode();
+    parameter N=32;
+    reg  signed [N-1:0] x0, y0;
+    reg  signed [17:0] angle;
+    reg clk;
+    wire [N-1:0] xf, yf;
+   
+    rotation_mode_4 uut (x0, y0, angle, clk, xf, yf);
+
+    always #5 clk=~clk;
+   
+    initial begin
+        clk=0;
+        x0=30_000; y0=40_000;
+       
+        angle=53_000; #10;
+//        angle=30_000; #10;
+//        angle=45_000; #10;
+//        angle=60_000; #10;
+//        angle=75_000; #10;
+//        angle=90_000; #10;
+        //x0=1000; y0=9000; angle=10000; #10;
+        //$finish;
     end
 endmodule
 ```
