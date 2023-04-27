@@ -169,3 +169,29 @@ To synthesis the code, first we have to login into server by given code:
 ```
 	  
 Then create the working directory
+```
+/DIG_DESIGN/INTERNS/dic_lab_03/piyush/rotating/
+```
+	  
+Now add verilog and .tcl file 
+Then done the synthesis by given below command:
+```
+tcsh
+source /DIG_DESIGN02/APPLICATION_CMS/Cadence/cshrc_cadence
+```
+	  
+```
+genus -legacy_ui
+```
+	 
+```
+source ROTATING.tcl	  
+```
+	  
+### Terminal
+<img width="960" alt="image" src="https://user-images.githubusercontent.com/123488595/234963835-14089e12-e716-46fd-82b1-322637531490.png">
+
+### Synthesis Design
+<img width="791" alt="image" src="https://user-images.githubusercontent.com/123488595/234964257-5705aff6-0270-4c9b-9e05-8eccb0a39374.png">
+
+<img width="790" alt="image" src="https://user-images.githubusercontent.com/123488595/234964437-89bc5ec7-c3c4-40b7-b76e-531d24952ec0.png">
