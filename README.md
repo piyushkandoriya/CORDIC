@@ -139,3 +139,11 @@ endmodule
 
 ### Output Waveform
 <img width="763" alt="image" src="https://user-images.githubusercontent.com/123488595/234938971-5be0a646-2872-4634-a0ab-0f7735017c94.png">
+
+## <h1 id="header-1_2">Synthesis of 2D ROTATING MODE CORDIC using GENUS</h1>
+To synthesis the code, first we have to login into server by given code:
+```
+	  ssh -X dic_lab_03@192.168.88.31
+```
+	  
+Then create the working directory
