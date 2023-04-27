@@ -136,3 +136,6 @@ module test_rotation_mode();
     end
 endmodule
 ```
+
+### Output Waveform
+<img width="763" alt="image" src="https://user-images.githubusercontent.com/123488595/234938971-5be0a646-2872-4634-a0ab-0f7735017c94.png">
