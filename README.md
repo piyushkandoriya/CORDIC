@@ -173,7 +173,7 @@ Then create the working directory
 /DIG_DESIGN/INTERNS/dic_lab_03/piyush/rotating/
 ```
 	  
-Now add verilog and .tcl file 
+Now add verilog (rotating.v) and .tcl file (rotating.tcl)
 Then done the synthesis by given below command:
 ```
 tcsh
@@ -185,7 +185,7 @@ genus -legacy_ui
 ```
 	 
 ```
-source ROTATING.tcl	  
+source rotating.tcl	  
 ```
 	  
 ### Terminal
